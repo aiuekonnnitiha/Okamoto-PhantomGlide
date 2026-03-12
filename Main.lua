@@ -76,6 +76,16 @@ TextLabel.TextSize = 16
 StyleButton(closebutton, UDim2.new(1, -25, 0, -25), UDim2.new(0, 20, 0, 20), "X", Color3.fromRGB(150, 0, 0))
 StyleButton(mini, UDim2.new(1, -50, 0, -25), UDim2.new(0, 20, 0, 20), "-", Color3.fromRGB(80, 80, 80))
 StyleButton(mini2, UDim2.new(0, 0, 0, 0), UDim2.new(0, 30, 0, 30), "+", Color3.fromRGB(45, 45, 45))
+
+mini2.Parent = main
+mini2.Visible = false
+mini2.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+mini2.TextColor3 = Color3.fromRGB(255, 255, 255)
+mini2.Font = Enum.Font.GothamBold
+mini2.Text = "+"
+local mini2Corner = Instance.new("UICorner")
+mini2Corner.CornerRadius = UDim.new(0, 8)
+mini2Corner.Parent = mini2
 mini2.Visible = false
 
 speeds = 1 
@@ -402,31 +412,6 @@ closebutton.MouseButton1Click:Connect(function()
 main:Destroy()
 end) 
 
-mini.MouseButton1Click:Connect(function()
-up.Visible = false
-down.Visible = false
-onof.Visible = false
-plus.Visible = false
-speed.Visible = false
-mine.Visible = false
-mini.Visible = false
-mini2.Visible = true
-main.Frame.BackgroundTransparency = 1
-closebutton.Position = UDim2.new(0, 0, -1, 57)
-end) 
-
-mini2.MouseButton1Click:Connect(function()
-up.Visible = true
-down.Visible = true
-onof.Visible = true
-plus.Visible = true
-speed.Visible = true
-mine.Visible = true
-mini.Visible = true
-mini2.Visible = false
-main.Frame.BackgroundTransparency = 0 
-closebutton.Position = UDim2.new(0, 0, -1, 27)
-end)
 speedBox.FocusLost:Connect(function(enterPressed)
     if enterPressed then
         local newSpeed = tonumber(speedBox.Text)
@@ -477,5 +462,18 @@ mine.MouseButton1Down:connect(function()
     speedBox.Text = tostring(speeds) 
 end)
 
-mini.MouseButton1Click:Connect(function() Frame.Visible = false mini2.Visible = true end)
-mini2.MouseButton1Click:Connect(function() Frame.Visible = true mini2.Visible = false end)
+mini.MouseButton1Click:Connect(function()
+    Frame.Visible = false
+    mini2.Visible = true
+    mini2.Size = UDim2.new(0, 35, 0, 35)
+    mini2.TextSize = 20
+    mini2.Position = Frame.Position
+    mini2.Active = true
+    mini2.Draggable = true
+end)
+
+mini2.MouseButton1Click:Connect(function()
+    Frame.Visible = true
+    mini2.Visible = false
+    Frame.Position = mini2.Position
+end)
