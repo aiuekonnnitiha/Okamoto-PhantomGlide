@@ -1,4 +1,3 @@
---ふらい
 local main = Instance.new("ScreenGui")
 local Frame = Instance.new("Frame")
 local UICorner_Main = Instance.new("UICorner")
@@ -87,6 +86,14 @@ mini2.Visible = false
 
 speeds = 1 
 
+local function syncSpeed()
+    if nowe then
+        tpwalking = false
+        task.wait(0.01)
+        tpwalking = true
+    end
+end
+
 local speaker = game:GetService("Players").LocalPlayer 
 
 local chr = game.Players.LocalPlayer.Character
@@ -142,9 +149,10 @@ speaker.Character.Humanoid:ChangeState(Enum.HumanoidStateType.RunningNoPhysics)
                     if hum:GetState() ~= Enum.HumanoidStateType.Swimming then
                         hum:ChangeState(Enum.HumanoidStateType.Swimming)
                     end
-                    if hum.MoveDirection.Magnitude > 0 then
-                        chr:TranslateBy(hum.MoveDirection)
-                    end
+
+if hum.MoveDirection.Magnitude > 0 then
+    chr:TranslateBy(hum.MoveDirection * speeds)
+end
                 end 
             end)
         end
@@ -351,6 +359,7 @@ end)
 plus.MouseButton1Down:connect(function()
     speeds = speeds + 1
     speedBox.Text = tostring(speeds)
+    syncSpeed()
 end)
 
 mine.MouseButton1Down:connect(function()
@@ -365,6 +374,19 @@ speedBox.FocusLost:Connect(function(enterPressed)
     end
 end)
 
+task.spawn(function()
+    while true do
+        task.wait(0.1)
+        if nowe == true then
+            tpwalking = false
+            task.wait(0.01)
+            tpwalking = true
+        end
+
+        repeat task.wait(0.5) until nowe == false or main == nil
+    end
+end)
+
 local TweenService = game:GetService("TweenService")
 
 mini2.Text = "♡"
@@ -376,7 +398,8 @@ mini2.Draggable = true
 local tweenInfo = TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 
 mini.MouseButton1Click:Connect(function()
-    mini2.Position = UDim2.new(Frame.Position.X.Scale, Frame.Position.X.Offset + 42, Frame.Position.Y.Scale, Frame.Position.Y.Offset - 32)
+    local currentPos = Frame.Position
+    mini2.Position = UDim2.new(currentPos.X.Scale, currentPos.X.Offset + 42, currentPos.Y.Scale, currentPos.Y.Offset - 32)
     
     for _, child in pairs(Frame:GetChildren()) do
         if child:IsA("GuiObject") then
@@ -399,8 +422,8 @@ end)
 
 mini2.MouseButton1Click:Connect(function()
     local originalSize = UDim2.new(0, 170, 0, 80)
-    
-    local targetPos = UDim2.new(mini2.Position.X.Scale, mini2.Position.X.Offset - 42, mini2.Position.Y.Scale, mini2.Position.Y.Offset + 32)
+    local currentHeart = mini2.Position
+    local targetPos = UDim2.new(currentHeart.X.Scale, currentHeart.X.Offset - 42, currentHeart.Y.Scale, currentHeart.Y.Offset + 32)
     
     Frame.Position = targetPos
     Frame.Visible = true
@@ -408,7 +431,7 @@ mini2.MouseButton1Click:Connect(function()
     for _, child in pairs(Frame:GetChildren()) do
         if child:IsA("GuiObject") then
             local textT = 0
-            local bgT = (child.Name == "speedBox" or child.Name == "TextLabel") and 1 or 0
+            local bgT = (child == speedBox or child == TextLabel) and 1 or 0
             TweenService:Create(child, tweenInfo, {TextTransparency = textT, BackgroundTransparency = bgT}):Play()
         end
     end
